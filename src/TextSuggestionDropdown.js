@@ -47,9 +47,9 @@ const TextSuggestionDropdown = () => {
     'grape',
   ];
   const textareaRef = React.createRef();
-
+  const [crDetails,setCrDetails]=useState('');
   const handleChange = (event) => {
-    // Setting Caret Position
+    // Setting Cursor Position
     const textarea = textareaRef.current;
     const cursorPosition = getAbsoluteCharacterCoordinates(
       textarea,
@@ -60,10 +60,12 @@ const TextSuggestionDropdown = () => {
     const inputValue = event.target.value;
     setValue(inputValue);
     // Extract the current word based on the cursor position
+    const replacedValue=inputValue.replace("\n"," ");
     const caretPosition = textareaRef.current.selectionEnd;
-    const startOfWord = inputValue.lastIndexOf(' ', caretPosition - 1) + 1;
-    const endOfWord = inputValue.indexOf(' ', caretPosition);
-    const currentWord = inputValue.slice(startOfWord, endOfWord === -1 ? undefined : endOfWord);
+    const startOfWord = replacedValue.lastIndexOf(' ', caretPosition - 1) + 1;
+    const endOfWord = replacedValue.indexOf(' ', caretPosition);
+    const currentWord = replacedValue.slice(startOfWord, endOfWord === -1 ? undefined : endOfWord);
+    setCrDetails(JSON.stringify({replacedValue,caretPosition,startOfWord,endOfWord}))
     setCurrentWord(currentWord);
     // Filter suggestions based on the current word
     if (currentWord.length) {
@@ -83,7 +85,6 @@ const TextSuggestionDropdown = () => {
   const handleSuggestionClick = (suggestion) => {
     // Replace the current word with the selected suggestion
     const escapedWord=RegxEscape(currentWord);
-    alert(escapedWord);
     const newInputValue = value.replace(
       new RegExp(escapedWord + '$'),
       suggestion
@@ -129,7 +130,7 @@ const TextSuggestionDropdown = () => {
         onKeyDown={handleKeyDown}
         placeholder="Type here..."
       />
-      {suggestions.length}
+      Suggestion Length : {suggestions.length},{showSuggestions ? 'true':'false'},<br/> Details : {crDetails}
       {showSuggestions && suggestions.length > 0 && (
         <ul
           className="suggestion-list"

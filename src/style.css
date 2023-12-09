@@ -17,7 +17,7 @@
 }
 .suggestion-container .suggestion-list {
   background-color: rgba(255, 255, 255, 0.246);
-  border: 1px solid navy;
+  border: 1px solid lightgray;
   box-shadow: 2px 2px 4px lightgray;
   border-radius: 0px;
   padding: 3px;
