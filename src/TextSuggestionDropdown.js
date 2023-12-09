@@ -49,14 +49,21 @@ const TextSuggestionDropdown = () => {
   const textareaRef = React.createRef();
 
   const handleChange = (event) => {
+    // Setting Caret Position
+    const textarea = textareaRef.current;
+    const cursorPosition = getAbsoluteCharacterCoordinates(
+      textarea,
+      textarea.selectionEnd
+    );
+    setCursorPosition(cursorPosition);
+    // Searching And Setting Value
     const inputValue = event.target.value;
     setValue(inputValue);
     // Extract the current word based on the cursor position
     const caretPosition = textareaRef.current.selectionEnd;
     const startOfWord = inputValue.lastIndexOf(' ', caretPosition - 1) + 1;
-    const endOfWord = inputValue.indexOf(' ', casetShowSuggestions
-      endOfWord === -1 ? undefined : endOfWord
-    );
+    const endOfWord = inputValue.indexOf(' ', caretPosition);
+    const currentWord = inputValue.slice(startOfWord, endOfWord === -1 ? undefined : endOfWord);
     setCurrentWord(currentWord);
     // Filter suggestions based on the current word
     if (currentWord.length) {
@@ -69,11 +76,16 @@ const TextSuggestionDropdown = () => {
       setSuggestions([]);
     }
   };
+   function RegxEscape(s) {
+    return s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+  };
 
   const handleSuggestionClick = (suggestion) => {
     // Replace the current word with the selected suggestion
+    const escapedWord=RegxEscape(currentWord);
+    alert(escapedWord);
     const newInputValue = value.replace(
-      new RegExp(currentWord + '$'),
+      new RegExp(escapedWord + '$'),
       suggestion
     );
     setValue(newInputValue);
@@ -109,6 +121,7 @@ const TextSuggestionDropdown = () => {
 
   return (
     <div className="suggestion-container" style={{ position: 'relative' }}>
+      <h3>Press CTRL+F to get Suggested Words</h3>
       <textarea
         ref={textareaRef}
         value={value}
@@ -122,8 +135,8 @@ const TextSuggestionDropdown = () => {
           className="suggestion-list"
           style={{
             position: 'absolute',
-            top: cursorPosition.top - 30, // Adjust the vertical position as needed
-            left: cursorPosition.left - 50,
+            top: cursorPosition.top, // Adjust the vertical position as needed
+            left: cursorPosition.left,
             zIndex: 9999,
           }}
         >

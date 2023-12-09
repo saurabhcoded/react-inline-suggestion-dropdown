@@ -1,7 +1,9 @@
 * {
   padding: 0;
   margin: 0;
-  padding: 15px;
+}
+.suggestion-container{
+  padding: 45px;
 }
 .suggestion-container textarea {
   background-color: aliceblue;
@@ -9,20 +11,21 @@
   border: 1px solid lightgray;
   outline: none;
   border-radius: 8px;
-  padding: 10px;
+  padding: 30px;
   height: 200px;
   resize: none;
 }
 .suggestion-container .suggestion-list {
-  background-color: white;
-  border: 1px solid rgb(233, 233, 233);
+  background-color: rgba(255, 255, 255, 0.246);
+  border: 1px solid navy;
   box-shadow: 2px 2px 4px lightgray;
   border-radius: 0px;
-  padding: 4px;
+  padding: 3px;
   margin: 0px;
 }
 .suggestion-container .suggestion-list li {
   list-style: none;
+  opacity: 0.5;
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 2px;
@@ -31,5 +34,6 @@
 }
 .suggestion-container .suggestion-list li:hover {
   background-color: navy;
+  opacity: 1;
   color: white;
 }
