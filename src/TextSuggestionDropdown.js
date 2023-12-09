@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { getAbsoluteCharacterCoordinates } from './charcord.js';
 const initialSuggStats={
-  constants:false,
+  operators:false,
   functions:false
 }
 const initialSuggData={
-    constants: [
+  operators: [
       {"id": "constant-sum-two-cells-1", "name": "Total Sales", "syntax": "=SUM(A2:A10, C2:C10)"},
       {"id": "constant-average-values-2", "name": "Average Scores", "syntax": "=AVERAGE(B1:B5, D1:D5)"},
       {"id": "constant-count-entries-3", "name": "Number of Records", "syntax": "=COUNT(E1:E20, F1:F20)"},
@@ -30,11 +30,16 @@ const initialSuggData={
       {"id": "function-average-multiple-ranges-20", "name": "Average Costs", "syntax": "=AVERAGE(AS1:AS5, AT1:AT5)"}
     ]
 }
+function getKeyByValue(obj, value) {
+  return Object.keys(obj).find(key => obj[key] === value);
+}
+const searchKey="syntax";
 const TextSuggestionDropdown = () => {
   const [value, setValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
-  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [showSuggestions, setShowSuggestions] = useState(initialSuggStats);
   const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
+  const [suggData,setSuggData]=useState(initialSuggData);
   const [currentWord, setCurrentWord] = useState('');
 
   const suggestionData = [
@@ -60,21 +65,23 @@ const TextSuggestionDropdown = () => {
     const inputValue = event.target.value;
     setValue(inputValue);
     // Extract the current word based on the cursor position
-    const replacedValue=inputValue.replace("\n"," ");
+    const replacedValue=inputValue.replaceAll("\n"," ");
     const caretPosition = textareaRef.current.selectionEnd;
     const startOfWord = replacedValue.lastIndexOf(' ', caretPosition - 1) + 1;
     const endOfWord = replacedValue.indexOf(' ', caretPosition);
     const currentWord = replacedValue.slice(startOfWord, endOfWord === -1 ? undefined : endOfWord);
-    setCrDetails(JSON.stringify({replacedValue,caretPosition,startOfWord,endOfWord}))
+    setCrDetails(JSON.stringify({replacedValue,currentWord,caretPosition,startOfWord,endOfWord}))
     setCurrentWord(currentWord);
     // Filter suggestions based on the current word
-    if (currentWord.length) {
-      const filteredSuggestions = suggestionData.filter((suggestion) =>
-        suggestion.toLowerCase().includes(currentWord.toLowerCase())
+    const activSuggKey=getKeyByValue(showSuggestions,true); // Suggestion Key For Showing List
+    if (currentWord.length && activSuggKey) {
+      const filteredSuggestions = suggData[activSuggKey].filter((suggestion) =>
+        suggestion[searchKey].toLowerCase().includes(currentWord.toLowerCase())
       );
+      console.log('activSuggKey',activSuggKey,suggData[activSuggKey],filteredSuggestions);
       setSuggestions(filteredSuggestions);
     } else {
-      setShowSuggestions(false);
+      setShowSuggestions(initialSuggStats);
       setSuggestions([]);
     }
   };
@@ -90,7 +97,7 @@ const TextSuggestionDropdown = () => {
       suggestion
     );
     setValue(newInputValue);
-    setShowSuggestions(false);
+    setShowSuggestions(initialSuggStats);
   };
 
   const handleKeyDown = (event) => {
@@ -101,17 +108,20 @@ const TextSuggestionDropdown = () => {
     );
     setCursorPosition(cursorPosition);
     if (event.ctrlKey && event.key === 'f') {
-      setShowSuggestions(true);
+      setShowSuggestions({...initialSuggStats ,functions:true});
+      event.preventDefault(); // Prevent the default find behavior in browsers
+    } else if(event.ctrlKey && event.key === 'k'){
+      setShowSuggestions({...initialSuggStats ,operators:true});
       event.preventDefault(); // Prevent the default find behavior in browsers
     } else if (event.key === 'Escape' && showSuggestions) {
-      setShowSuggestions(false);
+      setShowSuggestions(initialSuggStats);
     }
   };
 
   useEffect(() => {
     const handleKeyUp = (event) => {
       if (event.key === 'Escape' && showSuggestions) {
-        setShowSuggestions(false);
+        setShowSuggestions(initialSuggStats);
       }
     };
     document.addEventListener('keyup', handleKeyUp);
@@ -122,7 +132,8 @@ const TextSuggestionDropdown = () => {
 
   return (
     <div className="suggestion-container" style={{ position: 'relative' }}>
-      <h3>Press CTRL+F to get Suggested Words</h3>
+      <h4>Press CTRL+F to get Suggested Functions : {showSuggestions.functions ? 'true':'false'}</h4>
+      <h4>Press CTRL+K to get Suggested Operators : {showSuggestions.operators ? 'true':'false'}</h4>
       <textarea
         ref={textareaRef}
         value={value}
@@ -130,20 +141,20 @@ const TextSuggestionDropdown = () => {
         onKeyDown={handleKeyDown}
         placeholder="Type here..."
       />
-      Suggestion Length : {suggestions.length},{showSuggestions ? 'true':'false'},<br/> Details : {crDetails}
-      {showSuggestions && suggestions.length > 0 && (
+      {/* Suggestion Length : {suggestions.length},{showSuggestions ? 'true':'false'},<br/> Details : {crDetails} */}
+      {suggestions.length > 0 && (showSuggestions.operators || showSuggestions.functions) &&(
         <ul
           className="suggestion-list"
           style={{
             position: 'absolute',
             top: cursorPosition.top, // Adjust the vertical position as needed
             left: cursorPosition.left,
-            zIndex: 9999,
+            zIndex: 200,
           }}
         >
           {suggestions.map((suggestion, index) => (
-            <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
-              {suggestion}
+            <li key={index} onClick={() => handleSuggestionClick(suggestion[searchKey])}>
+              {suggestion[searchKey]}
             </li>
           ))}
         </ul>

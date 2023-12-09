@@ -1,6 +1,7 @@
 * {
   padding: 0;
   margin: 0;
+  font-family: monospace;
 }
 .suggestion-container{
   padding: 45px;
@@ -16,16 +17,17 @@
   resize: none;
 }
 .suggestion-container .suggestion-list {
-  background-color: rgba(255, 255, 255, 0.246);
+  background-color: rgba(255, 255, 255, 0.90);
   border: 1px solid lightgray;
   box-shadow: 2px 2px 4px lightgray;
   border-radius: 0px;
   padding: 3px;
   margin: 0px;
+  max-height: 200px;
+  overflow-y: auto;
 }
 .suggestion-container .suggestion-list li {
   list-style: none;
-  opacity: 0.5;
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 2px;
@@ -34,6 +36,5 @@
 }
 .suggestion-container .suggestion-list li:hover {
   background-color: navy;
-  opacity: 1;
   color: white;
 }
