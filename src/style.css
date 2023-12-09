@@ -1,0 +1,35 @@
+* {
+  padding: 0;
+  margin: 0;
+  padding: 15px;
+}
+.suggestion-container textarea {
+  background-color: aliceblue;
+  width: 100%;
+  border: 1px solid lightgray;
+  outline: none;
+  border-radius: 8px;
+  padding: 10px;
+  height: 200px;
+  resize: none;
+}
+.suggestion-container .suggestion-list {
+  background-color: white;
+  border: 1px solid rgb(233, 233, 233);
+  box-shadow: 2px 2px 4px lightgray;
+  border-radius: 0px;
+  padding: 4px;
+  margin: 0px;
+}
+.suggestion-container .suggestion-list li {
+  list-style: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 2px;
+  font-size: 12px;
+  transition: 0.1s;
+}
+.suggestion-container .suggestion-list li:hover {
+  background-color: navy;
+  color: white;
+}
